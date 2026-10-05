@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Базовый код человека (тест)</title>
+  <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body>
+  <main class="layout">
+    <section class="phone" aria-label="Чат с ботом">
+      <header class="phone__head">
+        <div class="avatar" aria-hidden="true">🔢</div>
+        <div class="phone__title">
+          <strong>Базовый код человека</strong>
+          <span>бот · тестовый режим · 18+</span>
+        </div>
+        <button id="devToggle" class="icon-btn" type="button" aria-label="Панель разработчика">⚙︎</button>
+      </header>
+      <div id="feed" class="feed" role="log" aria-live="polite"></div>
+      <form id="composer" class="composer" autocomplete="off">
+        <input id="input" type="text" placeholder="Сообщение" aria-label="Сообщение боту" enterkeyhint="send">
+        <button type="submit" class="send" aria-label="Отправить">➤</button>
+      </form>
+    </section>
+
+    <aside id="dev" class="dev" aria-label="Панель разработчика">
+      <h2>Панель разработчика</h2>
+      <p class="dev__note">Только для тестов. В Telegram этой панели не будет.</p>
+
+      <div class="dev__block">
+        <h3>Время бота</h3>
+        <div id="devTime" class="dev__val">...</div>
+        <div class="dev__row">
+          <button type="button" data-shift="1">+1 день</button>
+          <button type="button" data-shift="7">+7 дней</button>
+        </div>
+        <small>Нужно, чтобы проверить ежедневную рассылку без ожидания.</small>
+      </div>
+
+      <div class="dev__block">
+        <h3>Пользователь</h3>
+        <div id="devUser" class="dev__val dev__mono">...</div>
+        <div class="dev__row">
+          <button type="button" id="resetMe">Сбросить меня</button>
+          <button type="button" id="newUser">Новый пользователь</button>
+        </div>
+      </div>
+
+      <div class="dev__block">
+        <h3>Почта (имитация)</h3>
+        <ul id="devMail" class="dev__list"></ul>
+      </div>
+
+      <div class="dev__block">
+        <h3>Подарки</h3>
+        <ul id="devGifts" class="dev__list"></ul>
+      </div>
+
+      <div class="dev__block">
+        <h3>Заказы</h3>
+        <ul id="devOrders" class="dev__list"></ul>
+      </div>
+
+      <div class="dev__block">
+        <h3>Подписки</h3>
+        <ul id="devSubs" class="dev__list"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <div id="payModal" class="modal" hidden>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+      <h3 id="payTitle">Тестовая оплата</h3>
+      <p id="payInfo"></p>
+      <p class="modal__note">Это имитация платёжной формы. Деньги не списываются.</p>
+      <div class="modal__row">
+        <button type="button" id="payOk" class="primary">Оплатить</button>
+        <button type="button" id="payCancel">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/chat.js"></script>
+</body>
+</html>

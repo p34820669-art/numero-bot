@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+fpdf2
+pytest
+pytest-asyncio
+httpx

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180" role="img" aria-label="Загрузка">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a1d5e"/><stop offset="1" stop-color="#5b3cc4"/>
+    </linearGradient>
+    <style>.d{font:700 22px 'Segoe UI',Arial,sans-serif;fill:#fff}</style>
+  </defs>
+  <rect width="320" height="180" rx="16" fill="url(#bg)"/>
+  <circle cx="160" cy="90" r="74" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="1.5"/>
+  <g>
+    <circle cx="160" cy="90" r="74" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="36 400"/>
+    <animateTransform attributeName="transform" type="rotate" from="0 160 90" to="360 160 90" dur="3s" repeatCount="indefinite"/>
+  </g>
+  <text x="160.0" y="44.0" text-anchor="middle" class="d">1<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="0.0s" repeatCount="indefinite"/></text><text x="193.4" y="56.2" text-anchor="middle" class="d">2<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="0.3s" repeatCount="indefinite"/></text><text x="211.2" y="87.0" text-anchor="middle" class="d">3<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="0.6s" repeatCount="indefinite"/></text><text x="205.0" y="122.0" text-anchor="middle" class="d">4<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="0.9s" repeatCount="indefinite"/></text><text x="177.8" y="144.9" text-anchor="middle" class="d">5<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="1.2s" repeatCount="indefinite"/></text><text x="142.2" y="144.9" text-anchor="middle" class="d">6<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="1.5s" repeatCount="indefinite"/></text><text x="115.0" y="122.0" text-anchor="middle" class="d">7<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="1.8s" repeatCount="indefinite"/></text><text x="108.8" y="87.0" text-anchor="middle" class="d">8<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="2.1s" repeatCount="indefinite"/></text><text x="126.6" y="56.2" text-anchor="middle" class="d">9<animate attributeName="opacity" values="0.25;1;0.25" dur="2.7s" begin="2.4s" repeatCount="indefinite"/></text>
+</svg>
