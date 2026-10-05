@@ -19,7 +19,8 @@ CHANNEL_URL = os.getenv("NUMERO_CHANNEL_URL", "https://t.me/your_channel_here") 
 BOT_LINK = os.getenv("NUMERO_BOT_LINK", "https://t.me/your_bot_here")  # заглушка
 SUPPORT_URL = os.getenv("NUMERO_SUPPORT_URL", "https://t.me/your_support_here")  # заглушка
 # Ссылка на подарок. В Telegram будет вида https://t.me/<бот>?start=gift_{code}
-GIFT_LINK = os.getenv("NUMERO_GIFT_LINK", "http://localhost:8765/?gift={code}")
+_BASE_URL = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8765").rstrip("/")  # RENDER_EXTERNAL_URL ставит Render
+GIFT_LINK = os.getenv("NUMERO_GIFT_LINK", _BASE_URL + "/?gift={code}")
 
 # Цены-заглушки, рубли. Оплата в прототипе имитируется.
 PRICES = {

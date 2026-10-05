@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     state TEXT NOT NULL DEFAULT 'idle',
     ctx TEXT NOT NULL DEFAULT '{}',
     anchor INTEGER NOT NULL DEFAULT 0,
+    time_shift_s REAL NOT NULL DEFAULT 0,
     created_at REAL NOT NULL
 );
 CREATE TABLE IF NOT EXISTS orders (
@@ -82,7 +83,8 @@ class DB:
         for ddl in ("ALTER TABLE users ADD COLUMN anchor INTEGER NOT NULL DEFAULT 0",
                     "ALTER TABLE emails ADD COLUMN body TEXT NOT NULL DEFAULT ''",
                     "ALTER TABLE subs ADD COLUMN reminded INTEGER NOT NULL DEFAULT 0",
-                    "ALTER TABLE subs ADD COLUMN kind TEXT NOT NULL DEFAULT 'daily'"):
+                    "ALTER TABLE subs ADD COLUMN kind TEXT NOT NULL DEFAULT 'daily'",
+                    "ALTER TABLE users ADD COLUMN time_shift_s REAL NOT NULL DEFAULT 0"):
             try:  # база от прежней версии: добавляем новые колонки
                 self.conn.execute(ddl)
             except sqlite3.OperationalError:
@@ -103,17 +105,17 @@ class DB:
         return cur
 
     # ---- время (в разработке можно перематывать) ----
-    def time_shift(self) -> timedelta:
-        row = self._one("SELECT value FROM meta WHERE key='time_shift_s'")
-        return timedelta(seconds=float(row["value"])) if row else timedelta(0)
+    def time_shift(self, uid: Optional[str] = None) -> timedelta:
+        """Сдвиг времени пользователя (панель разработчика). У каждого свой, чужие не страдают."""
+        row = self._one("SELECT time_shift_s FROM users WHERE uid=?", (uid,)) if uid else None
+        return timedelta(seconds=row["time_shift_s"]) if row else timedelta(0)
 
-    def shift_time(self, days: float) -> None:
-        total = self.time_shift().total_seconds() + days * 86400
-        self._run("INSERT INTO meta(key,value) VALUES('time_shift_s',?) "
-                  "ON CONFLICT(key) DO UPDATE SET value=excluded.value", (str(total),))
+    def shift_time(self, days: float, uid: str) -> None:
+        self._run("INSERT OR IGNORE INTO users(uid, created_at) VALUES(?,?)", (uid, time.time()))
+        self._run("UPDATE users SET time_shift_s = time_shift_s + ? WHERE uid=?", (days * 86400, uid))
 
-    def now(self) -> datetime:
-        return datetime.now(timezone.utc) + self.time_shift()
+    def now(self, uid: Optional[str] = None) -> datetime:
+        return datetime.now(timezone.utc) + self.time_shift(uid)
 
     # ---- пользователи ----
     def user(self, uid: str) -> dict:

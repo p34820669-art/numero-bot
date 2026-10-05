@@ -326,15 +326,15 @@ async def test_subscription_flow_and_daily_delivery(chat):
     chat.clear()
     await chat.bot.tick()
     assert chat.sender.msgs == [], "в день подписки рассылки быть не должно"
-    chat.db.shift_time(1)
+    chat.db.shift_time(1, chat.uid)
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 1 and "Твой расклад на" in chat.sender.msgs[0].text
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 1, "второй раз за тот же день не шлём"
-    chat.db.shift_time(1)
+    chat.db.shift_time(1, chat.uid)
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 2
-    chat.db.shift_time(40)
+    chat.db.shift_time(40, chat.uid)
     await chat.bot.tick()
     assert chat.db.active_subs() == [], "после 30 дней подписка закрывается"
 
@@ -632,11 +632,11 @@ async def test_subscription_reminder_a_day_before_end_and_renewal_extends(chat):
     price = cfg.PRICES["sub_month"]
 
     chat.clear()
-    chat.db.shift_time(28)  # за два дня до конца: только расчёт
+    chat.db.shift_time(28, chat.uid)  # за два дня до конца: только расчёт
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 1 and "Твой расклад на" in chat.sender.msgs[0].text
 
-    chat.db.shift_time(1)  # за сутки до последнего расчёта: расчёт и напоминание
+    chat.db.shift_time(1, chat.uid)  # за сутки до последнего расчёта: расчёт и напоминание
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 3
     remind = chat.last
@@ -645,7 +645,7 @@ async def test_subscription_reminder_a_day_before_end_and_renewal_extends(chat):
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 3, "второй раз за день ничего не шлём"
 
-    chat.db.shift_time(1)  # последний день: расчёт есть, повторного напоминания нет
+    chat.db.shift_time(1, chat.uid)  # последний день: расчёт есть, повторного напоминания нет
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 4 and "Твой расклад на" in chat.last.text
 
@@ -658,7 +658,7 @@ async def test_subscription_reminder_a_day_before_end_and_renewal_extends(chat):
     assert d.fromisoformat(sub["end_date"]) == d.fromisoformat(end_before) + td(days=cfg.SUB_DAYS)
     assert len(chat.db.active_subs()) == 1
 
-    chat.db.shift_time(1)  # день 31: подписка продолжается, а не закрылась
+    chat.db.shift_time(1, chat.uid)  # день 31: подписка продолжается, а не закрылась
     await chat.bot.tick()
     assert "Твой расклад на" in chat.last.text and len(chat.db.active_subs()) == 1
 
@@ -671,11 +671,11 @@ async def test_reminder_when_time_jumps_to_last_day_says_last_and_not_paid_subsc
     await onboard(chat)
     _start_sub(chat)
     chat.clear()
-    chat.db.shift_time(30)  # перескочили сразу на последний день
+    chat.db.shift_time(30, chat.uid)  # перескочили сразу на последний день
     await chat.bot.tick()
     assert len(chat.sender.msgs) == 2
     assert "Это последний расчёт" in chat.last.text and "Завтра" not in chat.last.text
-    chat.db.shift_time(1)  # не оплатили: подписка закрывается, расчётов больше нет
+    chat.db.shift_time(1, chat.uid)  # не оплатили: подписка закрывается, расчётов больше нет
     await chat.bot.tick()
     assert chat.db.active_subs() == [] and len(chat.sender.msgs) == 2
 
@@ -796,18 +796,18 @@ async def test_current_month_choice_gives_current_month_and_subscription_starts_
 
     # доставка: раз в месяц, три раза, потом подписка закрывается
     chat.clear()
-    chat.db.shift_time(1)
+    chat.db.shift_time(1, chat.uid)
     await chat.bot.tick()
     assert chat.sender.msgs == [], "в месяц покупки подписка ничего не присылает"
     for n in range(1, cfg.SUBM_MONTHS + 1):
         now = chat.bot._local_now(chat.uid).date()
-        chat.db.shift_time((add_months(now, 1) - now).days)
+        chat.db.shift_time((add_months(now, 1) - now).days, chat.uid)
         await chat.bot.tick()
         await chat.bot.tick()  # повторный тик в том же месяце не шлёт второй раз
         assert len(chat.sender.msgs) == n
         assert "Твой расклад на" in chat.last.text and "Число месяца" in chat.last.text
         assert labels_of(chat) == ["🏠 В главное меню"]
-    chat.db.shift_time(31)
+    chat.db.shift_time(31, chat.uid)
     await chat.bot.tick()
     assert chat.db.active_subs() == [] and len(chat.sender.msgs) == cfg.SUBM_MONTHS
 

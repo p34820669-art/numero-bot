@@ -174,9 +174,8 @@ class Bot:
 
     async def tick(self) -> None:
         """Рассылка по подпискам. Вызывается планировщиком раз в несколько секунд."""
-        now = self.db.now()
         for s in self.db.active_subs():
-            local = now + timedelta(minutes=s["tz_min"])
+            local = self.db.now(s["uid"]) + timedelta(minutes=s["tz_min"])
             ld = local.date().isoformat()
             if ld > s["end_date"]:
                 self.db.update_sub(s["id"], active=0)
@@ -227,7 +226,7 @@ class Bot:
 
     def _local_now(self, uid: str) -> datetime:
         tz = self.db.user(uid)["tz_min"]
-        return self.db.now() + timedelta(minutes=cfg.DEFAULT_TZ_MINUTES if tz is None else tz)
+        return self.db.now(uid) + timedelta(minutes=cfg.DEFAULT_TZ_MINUTES if tz is None else tz)
 
     async def _stale(self, out: Out) -> None:
         await out.say(T.STALE, rows(MENU_BTN))
@@ -701,7 +700,8 @@ class Bot:
         if ctx.get("flow") == "friend":
             order = self.db.order(ctx["order"])
             await self.mail_pdf(uid, order, email, body=self.friend_letter(order))
-            self.db.update_order(order["id"], params={**order["params"], "friend_sent": True})
+            fresh = self.db.order(order["id"])  # в заказе уже может быть токен PDF
+            self.db.update_order(order["id"], params={**fresh["params"], "friend_sent": True})
             return await out.say(T.FRIEND_SENT.format(email=email),
                                  self.compat_end_buttons(self.db.order(order["id"])))
         if ctx.get("flow") == "postpay":
@@ -859,7 +859,11 @@ class Bot:
 
     async def mail_pdf(self, uid: str, order: dict, email: str, body: str = "") -> None:
         params = order["params"]
-        path = self.outbox / f"{order['product']}_{order['id']}.pdf"
+        token = params.get("pdf_token")
+        if not token:
+            token = secrets.token_hex(4)
+            self.db.update_order(order["id"], params={**params, "pdf_token": token})
+        path = self.outbox / f"{order['product']}_{order['id']}_{token}.pdf"
         if order["product"] == "personal":
             pdfgen.build_personal(date.fromisoformat(params["birth"]), path)
             subject = "Твой личный расклад"

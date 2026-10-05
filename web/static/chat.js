@@ -193,7 +193,7 @@
   $("devToggle").addEventListener("click", () => $("dev").classList.toggle("open"));
   document.querySelectorAll("[data-shift]").forEach((b) =>
     b.addEventListener("click", async () => {
-      await post("/api/dev/shift", { days: Number(b.dataset.shift) });
+      await post("/api/dev/shift", { uid, days: Number(b.dataset.shift) });
       toast(`Время бота сдвинуто на ${b.dataset.shift} дн.`);
       refreshDev();
     }));

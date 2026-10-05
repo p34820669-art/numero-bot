@@ -1,0 +1,7 @@
+.git
+data
+tests
+__pycache__
+.pytest_cache
+*.pyc
+numero_mindmap.pdf
